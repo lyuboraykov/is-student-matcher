@@ -1,0 +1,12 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/nashika/typed-csv-parse/b300d8674f93cfd70a02e5c45354d980a7179a2e/typings.json",
+    "raw": "registry:npm/csv-parse#1.0.2+20160405213407",
+    "main": "index.d.ts",
+    "files": [
+      "lib/sync.d.ts"
+    ],
+    "name": "csv-parse"
+  }
+}
