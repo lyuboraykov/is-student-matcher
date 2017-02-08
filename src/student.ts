@@ -31,7 +31,7 @@ export enum Guardian {
 }
 
 export class StudentField {
-  public constructor(csvKey: string, toValue: (csvVal: string) => number) {
+  public constructor(csvKey: string, toValue: (csvVal: string, type?: string) => number) {
     this.csvKey = csvKey;
     this.toValue = toValue;
   }
@@ -47,75 +47,33 @@ export class StudentField {
   public static numericToValue(csvVal: string): number {
     return parseInt(csvVal);
   }
+
+  public static enumToValue(type: string): (csvVal: string) => number {
+    // don't look here
+    const enumm = eval(type);
+    return (csvVal: string): number => {
+      for (const type in enumm) {
+        if (csvVal.toUpperCase() === type) {
+          return parseInt(enumm[type]);
+        }
+      }
+    };
+  }
 }
 
 export default class Student {
-  public school = new StudentField('school', csvVal => {
-    for (const type in School) {
-      if (csvVal.toUpperCase() === type) {
-        return parseInt(School[type]);
-      }
-    }
-  });
-  public sex = new StudentField('sex', csvVal => {
-    for (const type in Sex) {
-      if (csvVal.toUpperCase() === type) {
-        return parseInt(Sex[type]);
-      }
-    }
-  });
+  public school = new StudentField('school', StudentField.enumToValue('School'));
+  public sex = new StudentField('sex', StudentField.enumToValue('Sex'));
   public age = new StudentField('age', StudentField.numericToValue);
-  public address = new StudentField('address', csvVal => {
-    for (const type in Address) {
-      if (csvVal.toUpperCase() === type) {
-        return parseInt(Address[type]);
-      }
-    }
-  });
-  public familySize = new StudentField('famsize', csvVal => {
-    for (const type in FamilySize) {
-      if (csvVal.toUpperCase() === type) {
-        return parseInt(FamilySize[type]);
-      }
-    }
-  });
-  public parentalStatus = new StudentField('Pstatus', csvVal => {
-    for (const type in ParentalStatus) {
-      if (csvVal.toUpperCase() === type) {
-        return parseInt(ParentalStatus[type]);
-      }
-    }
-  });
+  public address = new StudentField('address', StudentField.enumToValue('Address'));
+  public familySize = new StudentField('famsize', StudentField.enumToValue('FamilySize'));
+  public parentalStatus = new StudentField('Pstatus', StudentField.enumToValue('ParentalStatus'));
   public motherEducation = new StudentField('Medu', StudentField.numericToValue);
   public fatherEducation = new StudentField('Fedu', StudentField.numericToValue);
-  public motherJob = new StudentField('Mjob', csvVal => {
-    for (const type in ParentJob) {
-      if (csvVal.toUpperCase() === type) {
-        return parseInt(ParentJob[type]);
-      }
-    }
-  });
-  public fatherJob = new StudentField('Fjob', csvVal => {
-    for (const type in ParentJob) {
-      if (csvVal.toUpperCase() === type) {
-        return parseInt(ParentJob[type]);
-      }
-    }
-  });
-  public reason = new StudentField('reason', csvVal => {
-    for (const type in SchoolReason) {
-      if (csvVal.toUpperCase() === type) {
-        return parseInt(SchoolReason[type]);
-      }
-    }
-  });
-  public guardian = new StudentField('guardian', csvVal => {
-    for (const type in Guardian) {
-      if (csvVal.toUpperCase() === type) {
-        return parseInt(Guardian[type]);
-      }
-    }
-  });
+  public motherJob = new StudentField('Mjob', StudentField.enumToValue('ParentJob'));
+  public fatherJob = new StudentField('Fjob', StudentField.enumToValue('ParentJob'));
+  public reason = new StudentField('reason', StudentField.enumToValue('SchoolReason'));
+  public guardian = new StudentField('guardian', StudentField.enumToValue('Guardian'));
   public traveltime = new StudentField('traveltime', StudentField.numericToValue);
   public studytime = new StudentField('studytime', StudentField.numericToValue);
   public failures = new StudentField('failures', StudentField.numericToValue);
