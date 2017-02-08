@@ -12,7 +12,9 @@ const parser = csv({columns: true, delimiter: ';'});
 const students: Student[] = [];
 
 fileStream.pipe(parser).on('data', (row: any) => {
-    students.push(new Student(row));
+    const student = new Student(row);
+    students.push(student);
+}).on('finish', () => {
+    console.log(students.join(' - '));
 });
 
-console.log(students.join(' - '));

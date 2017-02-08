@@ -12,6 +12,10 @@ export default class Student {
     Dalc: 'dailyAlcohol',
     Walc: 'weeklyAlcohol'
   };
+
+  private ignoredProperties: string[] = [
+    'G1', 'G2', 'G3'
+  ]
   // student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira)
   public school: string;
   // student's sex (binary: 'F' - female or 'M' - male)
@@ -87,7 +91,7 @@ export default class Student {
     for (const key in csvEntry) {
       if (key in this.dataToProp) {
         this[this.dataToProp[key]] = this.parseValue(csvEntry[key]);
-      } else if (key in this) {
+      } else if (this.ignoredProperties.indexOf(key) === -1) {
         this[key] = csvEntry[key];
       }
     }
@@ -96,7 +100,7 @@ export default class Student {
   private parseValue(val: string): any {
     let parsedValue: any;
     parsedValue = parseInt(val);
-    if (parsedValue === NaN) {
+    if (isNaN(parsedValue)) {
       parsedValue = val;
     }
     return parsedValue;
