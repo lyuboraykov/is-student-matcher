@@ -13,7 +13,7 @@ const FULL_PERCENTAGE = 100;
 export function* getTestingAndTrainingStudents(students: Student[]):
         IterableIterator<{testing: Student[], training: Student[]}> {
     let offsetPercentage = 0;
-    while(offsetPercentage < FULL_PERCENTAGE - TESTING_PERCENTAGE) {
+    while (offsetPercentage < FULL_PERCENTAGE - TESTING_PERCENTAGE) {
         let startIndex = (offsetPercentage / FULL_PERCENTAGE) * students.length;
         let endIndex = ((offsetPercentage + TESTING_PERCENTAGE) / FULL_PERCENTAGE) * students.length;
         let testingStudents = students.slice(startIndex, endIndex);

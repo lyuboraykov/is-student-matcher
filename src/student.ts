@@ -1,109 +1,163 @@
-export default class Student {
-  [key: string]: any;
-  private dataToProp: {[key: string]: string} = {
-    famsize: 'familySize',
-    Pstatus: 'parentalStatus',
-    Medu: 'motherEducation',
-    Fedu: 'fatherEducation',
-    Mjob: 'motherJob',
-    Fjob: 'fatherJob',
-    schoolsup: 'schoolSupport',
-    famsup: 'familySupport',
-    Dalc: 'dailyAlcohol',
-    Walc: 'weeklyAlcohol'
-  };
+export enum School {
+  GP, MS
+}
 
-  private ignoredProperties: string[] = [
-    'G1', 'G2', 'G3'
+export enum Sex {
+  F, M
+}
+
+export enum Address {
+  U, R
+}
+
+export enum FamilySize {
+  LE3, GT3
+}
+
+export enum ParentalStatus {
+  T, A
+}
+
+export enum ParentJob {
+  TEACHER, HEALTH, SERVICES, AT_HOME, OTHER
+}
+
+export enum SchoolReason {
+  HOME, REPUTATION, COURSE, OTHER
+}
+
+export enum Guardian {
+  MOTHER, FATHER, OTHER
+}
+
+export class StudentField {
+  public constructor(csvKey: string, toValue: (csvVal: string) => number) {
+    this.csvKey = csvKey;
+    this.toValue = toValue;
+  }
+
+  public value: number;
+  public csvKey: string;
+  public toValue: (csvVal: string) => number;
+
+  public static booleanToValue(csvVal: string): number {
+    return +(csvVal === 'yes');
+  }
+
+  public static numericToValue(csvVal: string): number {
+    return parseInt(csvVal);
+  }
+}
+
+export default class Student {
+  public school = new StudentField('school', csvVal => {
+    for (const type in School) {
+      if (csvVal.toUpperCase() === type) {
+        return parseInt(School[type]);
+      }
+    }
+  });
+  public sex = new StudentField('sex', csvVal => {
+    for (const type in Sex) {
+      if (csvVal.toUpperCase() === type) {
+        return parseInt(Sex[type]);
+      }
+    }
+  });
+  public age = new StudentField('age', StudentField.numericToValue);
+  public address = new StudentField('address', csvVal => {
+    for (const type in Address) {
+      if (csvVal.toUpperCase() === type) {
+        return parseInt(Address[type]);
+      }
+    }
+  });
+  public familySize = new StudentField('famsize', csvVal => {
+    for (const type in FamilySize) {
+      if (csvVal.toUpperCase() === type) {
+        return parseInt(FamilySize[type]);
+      }
+    }
+  });
+  public parentalStatus = new StudentField('Pstatus', csvVal => {
+    for (const type in ParentalStatus) {
+      if (csvVal.toUpperCase() === type) {
+        return parseInt(ParentalStatus[type]);
+      }
+    }
+  });
+  public motherEducation = new StudentField('Medu', StudentField.numericToValue);
+  public fatherEducation = new StudentField('Fedu', StudentField.numericToValue);
+  public motherJob = new StudentField('Mjob', csvVal => {
+    for (const type in ParentJob) {
+      if (csvVal.toUpperCase() === type) {
+        return parseInt(ParentJob[type]);
+      }
+    }
+  });
+  public fatherJob = new StudentField('Fjob', csvVal => {
+    for (const type in ParentJob) {
+      if (csvVal.toUpperCase() === type) {
+        return parseInt(ParentJob[type]);
+      }
+    }
+  });
+  public reason = new StudentField('reason', csvVal => {
+    for (const type in SchoolReason) {
+      if (csvVal.toUpperCase() === type) {
+        return parseInt(SchoolReason[type]);
+      }
+    }
+  });
+  public guardian = new StudentField('guardian', csvVal => {
+    for (const type in Guardian) {
+      if (csvVal.toUpperCase() === type) {
+        return parseInt(Guardian[type]);
+      }
+    }
+  });
+  public traveltime = new StudentField('traveltime', StudentField.numericToValue);
+  public studytime = new StudentField('studytime', StudentField.numericToValue);
+  public failures = new StudentField('failures', StudentField.numericToValue);
+  public schoolSupport = new StudentField('schoolsup', StudentField.booleanToValue);
+  public familySupport = new StudentField('famsup', StudentField.booleanToValue);
+  public paid = new StudentField('paid', StudentField.booleanToValue);
+  public activities = new StudentField('activities', StudentField.booleanToValue);
+  public nursery = new StudentField('nursery', StudentField.booleanToValue);
+  public higher = new StudentField('higher', StudentField.booleanToValue);
+  public internet = new StudentField('internet', StudentField.booleanToValue);
+  public romantic = new StudentField('romantic', StudentField.booleanToValue);
+  public familyRelationship = new StudentField('famrel', StudentField.numericToValue);
+  public freetime = new StudentField('freetime', StudentField.numericToValue);
+  public goout = new StudentField('goout', StudentField.numericToValue);
+  public dailyAlcohol = new StudentField('Dalc', StudentField.numericToValue);
+  public weeklyAlcohol = new StudentField('Walc', StudentField.numericToValue);
+  public health = new StudentField('health', StudentField.numericToValue);
+  public absences = new StudentField('absences', StudentField.numericToValue);
+
+  public csvProps: [StudentField] = [
+    this.school, this.sex, this.age, this.address, this.familySize, this.parentalStatus,
+    this.motherEducation, this.fatherEducation, this.motherJob, this.fatherJob,
+    this.reason, this.guardian, this.traveltime, this.studytime, this.failures,
+    this.schoolSupport, this.familySupport, this.paid, this.activities, this.nursery,
+    this.higher, this.internet, this.romantic, this.familyRelationship, this.freetime,
+    this.goout, this.dailyAlcohol, this.weeklyAlcohol, this.health, this.absences
   ]
-  // student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira)
-  public school: string;
-  // student's sex (binary: 'F' - female or 'M' - male)
-  public sex: string;
-  // student's age (numeric: from 15 to 22)
-  public age: number;
-  // student's home address type (binary: 'U' - urban or 'R' - rural)
-  public address: string;
-  // family size (binary: 'LE3' - less or equal to 3 or 'GT3' - greater than 3)
-  public familySize: string;
-  // parent's cohabitation status (binary: 'T' - living together or 'A' - apart)
-  public parentalStatus: string;
-  // mother's education (numeric: 0 - none,
-  //  1 - primary education (4th grade), 2 â€“ 5th to 9th grade,
-  //  3 â€“ secondary education or 4 â€“ higher education)
-  public motherEducation: number;
-  //  father's education (numeric: 0 - none,
-  // 1 - primary education (4th grade), 2 â€“ 5th to 9th grade,
-  // 3 â€“ secondary education or 4 â€“ higher education)
-  public fatherEducation: number;
-  // mother's job (nominal: 'teacher', 'health' care related, civil 'services'
-  // (e.g. administrative or police), 'at_home' or 'other')
-  public motherJob: string;
-  // Fjob - father's job (nominal: 'teacher', 'health'
-  // care related, civil 'services' (e.g. administrative or police),
-  //  'at_home' or 'other')
-  public fatherJob: string;
-  // reason - reason to choose this school (nominal: close to 'home',
-  //  school 'reputation', 'course' preference or 'other')
-  public reason: string;
-  // guardian - student's guardian (nominal: 'mother', 'father' or 'other')
-  public guardian: string;
-  // traveltime - home to school travel time (numeric: 1 - <15 min.,
-  //  2 - 15 to 30 min., 3 - 30 min. to 1 hour, or 4 - >1 hour)
-  public traveltime: number;
-  // studytime - weekly study time (numeric: 1 - <2 hours, 2 - 2 to 5 hours,
-  //  3 - 5 to 10 hours, or 4 - >10 hours)
-  public studytime: string;
-  // failures - number of past class failures (numeric: n if 1<=n<3, else 4)
-  public failures: number;
-  // schoolsup - extra educational support (binary: yes or no)
-  public schoolSupport: string;
-  // famsup - family educational support (binary: yes or no)
-  public familySupport: string;
-  // paid - extra paid classes within the course subject (Math or Portuguese) (binary: yes or no)
-  public paid: string;
-  // activities - extra-curricular activities (binary: yes or no)
-  public activities: string;
-  // nursery - attended nursery school (binary: yes or no)
-  public nursery: string;
-  // higher - wants to take higher education (binary: yes or no)
-  public higher: string;
-  // internet - Internet access at home (binary: yes or no)
-  public internet: string;
-  // romantic - with a romantic relationship (binary: yes or no)
-  public romantic: string;
-  // famrel - quality of family relationships (numeric: from 1 - very bad to 5 - excellent)
-  public familyRelationship: number;
-  // freetime - free time after school (numeric: from 1 - very low to 5 - very high)
-  public freetime: number;
-  // goout - going out with friends (numeric: from 1 - very low to 5 - very high)
-  public goout: number;
-  // Dalc - workday alcohol consumption (numeric: from 1 - very low to 5 - very high)
-  public dailyAlcohol: number;
-  // Walc - weekend alcohol consumption (numeric: from 1 - very low to 5 - very high)
-  public weeklyAlcohol: number;
-  // health - current health status (numeric: from 1 - very bad to 5 - very good)
-  public health: number;
-  // absences - number of school absences (numeric: from 0 to 93)
-  public absence: number;
 
   public constructor(csvEntry: {[key: string]: string}) {
     for (const key in csvEntry) {
-      if (key in this.dataToProp) {
-        this[this.dataToProp[key]] = this.parseValue(csvEntry[key]);
-      } else if (this.ignoredProperties.indexOf(key) === -1) {
-        this[key] = csvEntry[key];
+      for (const prop of this.csvProps) {
+        if (prop.csvKey === key) {
+          prop.value = prop.toValue(csvEntry[key]);
+        }
       }
     }
   }
 
-  private parseValue(val: string): any {
-    let parsedValue: any;
-    parsedValue = parseInt(val);
-    if (isNaN(parsedValue)) {
-      parsedValue = val;
-    }
-    return parsedValue;
+  public toPoint(): number[] {
+    return this.csvProps.map(csvProp => {
+      return csvProp.value;
+    });
   }
 }
 
