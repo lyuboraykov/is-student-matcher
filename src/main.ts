@@ -7,6 +7,8 @@ import { Transform } from 'stream';
 import Student from './student';
 import { getTestingAndTrainingStudents } from './lib/cross-validation';
 
+import {kmeans} from './core/k-means';
+
 const fileStream = createReadStream('./data/students.csv');
 const parser = csv({columns: true, delimiter: ';'});
 
