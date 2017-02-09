@@ -7,7 +7,8 @@ import { Transform } from 'stream';
 import Student from './student';
 import { getTestingAndTrainingStudents } from './lib/cross-validation';
 
-import {kMeans, distributeClusters} from './core/k-means';
+import { kMeans, distributeClusters } from './core/k-means';
+import { stableRoommates }  from './core/irving';
 
 const fileStream = createReadStream('./data/students-preferences.csv');
 const parser = csv({columns: true, delimiter: ';'});
@@ -22,6 +23,7 @@ fileStream.pipe(parser).on('data', (row: any) => {
     const clusters = kMeans(division.training.map(student => student.toPoint()),
                             division.training.length / 3);
     const distributedClusters = distributeClusters(clusters, 3);
-    console.log(distributedClusters);
+    // stableRoommates(students.filter(st => st.preferences.value.length > 100));
+    console.log(students);
   }
 });

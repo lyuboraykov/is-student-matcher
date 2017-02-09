@@ -69,7 +69,7 @@ export class SpecialField {
 
   public csvKey: string;
   public toValue: (csvVal: string) => number[];
-  public value: number[];
+  public value: number[] = [];
 
   public static arrToVal(csvVal: string): number[] {
     return csvVal.split(',').map(num => parseInt(num));
@@ -108,6 +108,61 @@ export default class Student {
   public health = new StudentField('health', StudentField.numericToValue);
   public absences = new StudentField('absences', StudentField.numericToValue);
   public preferences = new SpecialField('preferences', SpecialField.arrToVal);
+  // those who have offered you
+  public proposals: number[] = [];
+  // those who you have offered
+  public propositions: number[] = [];
+  public matched: number = -1;
+  public rejected: number[] = [];
+
+  public isMatched(): boolean {
+    return this.matched !== -1;
+  }
+
+  public hasRejected(i: number): boolean {
+    return this.rejected.indexOf(i) !== -1;
+  }
+
+  public proposeTo(student: Student, myI: number, otherI: number): void {
+    this.propositions.push(otherI);
+    student.proposals.push(myI);
+  }
+
+  public accept(student: Student, myI: number, otherI: number): void {
+    student.matched = myI;
+    this.matched = otherI;
+  }
+
+  public reject(student: Student, myI: number, otherI: number): void {
+    if (this.matched == otherI) {
+      this.matched = -1;
+    }
+    this.proposals = this.proposals.filter(el => el !== otherI);
+    this.rejected.push(otherI);
+    student.rejected.push(myI);
+    if (student.matched === myI) {
+      student.matched = -1;
+    }
+    student.propositions = student.propositions.filter(el => el !== myI);
+    student.preferences.value = student.preferences.value.filter(el => el !== myI);
+  }
+
+  public hasBeenProposed(): boolean {
+    return this.proposals.length > 0;
+  }
+
+  public prefersOver(i: number, j: number): boolean {
+    return this.preferences.value.indexOf(i) < this.preferences.value.indexOf(j);
+  }
+
+  public rejectLowerThanMatched(students: Student[], myI: number): void {
+    const matchedPrefI = this.preferences.value.indexOf(this.matched);
+    for (let i = matchedPrefI + 1; i < this.preferences.value.length; i++) {
+      const otherI = this.preferences.value[i];
+      this.reject(students[otherI], myI, otherI);
+      students[otherI].reject(this, otherI, myI);
+    }
+  }
 
   public csvProps: [StudentField] = [
     this.school, this.sex, this.age, this.address, this.familySize, this.parentalStatus,
