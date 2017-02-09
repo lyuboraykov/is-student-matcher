@@ -7,7 +7,7 @@ import { Transform } from 'stream';
 import Student from './student';
 import { getTestingAndTrainingStudents } from './lib/cross-validation';
 
-import {kmeans} from './core/k-means';
+import {kMeans} from './core/k-means';
 
 const fileStream = createReadStream('./data/students.csv');
 const parser = csv({columns: true, delimiter: ';'});
@@ -15,12 +15,12 @@ const parser = csv({columns: true, delimiter: ';'});
 const students: Student[] = [];
 
 fileStream.pipe(parser).on('data', (row: any) => {
-    const student = new Student(row);
-    students.push(student);
+  const student = new Student(row);
+  students.push(student);
 }).on('finish', () => {
-    console.log(students[0].toPoint());
-    for (let division of getTestingAndTrainingStudents(students)) {
-        console.log(`Testing: ${division.testing.length}`);
-        console.log(`Training: ${division.training.length}`);
-    }
+  for (let division of getTestingAndTrainingStudents(students)) {
+    const clusters = kMeans(division.training.map(student => student.toPoint()),
+                            division.training.length / 3);
+    console.log(clusters);
+  }
 });
