@@ -7,7 +7,7 @@ import { Transform } from 'stream';
 import Student from './student';
 import { getTestingAndTrainingStudents } from './lib/cross-validation';
 
-import {kMeans} from './core/k-means';
+import {kMeans, distributeClusters} from './core/k-means';
 
 const fileStream = createReadStream('./data/students-preferences.csv');
 const parser = csv({columns: true, delimiter: ';'});
@@ -21,6 +21,7 @@ fileStream.pipe(parser).on('data', (row: any) => {
   for (let division of getTestingAndTrainingStudents(students)) {
     const clusters = kMeans(division.training.map(student => student.toPoint()),
                             division.training.length / 3);
-    console.log(clusters);
+    const distributedClusters = distributeClusters(clusters, 3);
+    console.log(distributedClusters);
   }
 });

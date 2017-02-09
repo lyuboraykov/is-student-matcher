@@ -113,3 +113,30 @@ export function kMeans(points: number[][], clusterCount: number): number[][] {
 	}
 	return pointAssignments;
 }
+
+/**
+ * Distribute the clusters from kMeans to event groups of count distributionCount
+ *
+ * @export
+ * @param {number[][]} clusters
+ * @param {number} distributionCount
+ * @returns {number[][]}
+ */
+export function distributeClusters(clusters: number[][], distributionCount: number): number[][] {
+	const groups: number[][] = [[]];
+	let currentGroupSize = 0;
+	let currentGroupIndex = 0;
+	for (let i = 0; i < clusters.length; i++) {
+		for (let j = 0; j < clusters[i].length; j++) {
+			if (currentGroupSize < distributionCount) {
+				groups[currentGroupIndex].push(clusters[i][j]);
+				currentGroupSize += 1;
+			} else {
+				groups.push([clusters[i][j]]);
+				currentGroupIndex += 1;
+				currentGroupSize = 1;
+			}
+		}
+	}
+	return groups;
+}
