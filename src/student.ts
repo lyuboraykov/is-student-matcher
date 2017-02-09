@@ -61,6 +61,21 @@ export class StudentField {
   }
 }
 
+export class SpecialField {
+  public constructor(csvKey: string, toValue: (csvVal: string) => number[]) {
+    this.csvKey = csvKey;
+    this.toValue = toValue;
+  }
+
+  public csvKey: string;
+  public toValue: (csvVal: string) => number[];
+  public value: number[];
+
+  public static arrToVal(csvVal: string): number[] {
+    return csvVal.split(',').map(num => parseInt(num));
+  }
+}
+
 export default class Student {
   public school = new StudentField('school', StudentField.enumToValue('School'));
   public sex = new StudentField('sex', StudentField.enumToValue('Sex'));
@@ -92,6 +107,7 @@ export default class Student {
   public weeklyAlcohol = new StudentField('Walc', StudentField.numericToValue);
   public health = new StudentField('health', StudentField.numericToValue);
   public absences = new StudentField('absences', StudentField.numericToValue);
+  public preferences = new SpecialField('preferences', SpecialField.arrToVal);
 
   public csvProps: [StudentField] = [
     this.school, this.sex, this.age, this.address, this.familySize, this.parentalStatus,
@@ -102,9 +118,18 @@ export default class Student {
     this.goout, this.dailyAlcohol, this.weeklyAlcohol, this.health, this.absences
   ]
 
+  public specialProps: [SpecialField] = [
+    this.preferences
+  ]
+
   public constructor(csvEntry: {[key: string]: string}) {
     for (const key in csvEntry) {
       for (const prop of this.csvProps) {
+        if (prop.csvKey === key) {
+          prop.value = prop.toValue(csvEntry[key]);
+        }
+      }
+      for (const prop of this.specialProps) {
         if (prop.csvKey === key) {
           prop.value = prop.toValue(csvEntry[key]);
         }

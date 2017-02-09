@@ -9,7 +9,7 @@ import { getTestingAndTrainingStudents } from './lib/cross-validation';
 
 import {kMeans} from './core/k-means';
 
-const fileStream = createReadStream('./data/students.csv');
+const fileStream = createReadStream('./data/students-preferences.csv');
 const parser = csv({columns: true, delimiter: ';'});
 
 const students: Student[] = [];
