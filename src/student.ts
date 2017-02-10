@@ -108,6 +108,7 @@ export default class Student {
   public health = new StudentField('health', StudentField.numericToValue);
   public absences = new StudentField('absences', StudentField.numericToValue);
   public preferences = new SpecialField('preferences', SpecialField.arrToVal);
+  public closeFriend = new StudentField('close_friends', StudentField.numericToValue);
   // those who have offered you
   public proposals: number[] = [];
   // those who you have offered
@@ -164,7 +165,7 @@ export default class Student {
     }
   }
 
-  public csvProps: [StudentField] = [
+  public pointProps: [StudentField] = [
     this.school, this.sex, this.age, this.address, this.familySize, this.parentalStatus,
     this.motherEducation, this.fatherEducation, this.motherJob, this.fatherJob,
     this.reason, this.guardian, this.traveltime, this.studytime, this.failures,
@@ -173,18 +174,18 @@ export default class Student {
     this.goout, this.dailyAlcohol, this.weeklyAlcohol, this.health, this.absences
   ]
 
-  public specialProps: [SpecialField] = [
-    this.preferences
+  public otherProps: [SpecialField | StudentField] = [
+    this.preferences, this.closeFriend
   ]
 
   public constructor(csvEntry: {[key: string]: string}) {
     for (const key in csvEntry) {
-      for (const prop of this.csvProps) {
+      for (const prop of this.pointProps) {
         if (prop.csvKey === key) {
           prop.value = prop.toValue(csvEntry[key]);
         }
       }
-      for (const prop of this.specialProps) {
+      for (const prop of this.otherProps) {
         if (prop.csvKey === key) {
           prop.value = prop.toValue(csvEntry[key]);
         }
@@ -193,7 +194,7 @@ export default class Student {
   }
 
   public toPoint(): number[] {
-    return this.csvProps.map(csvProp => {
+    return this.pointProps.map(csvProp => {
       return csvProp.value;
     });
   }

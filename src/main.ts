@@ -10,7 +10,7 @@ import { getTestingAndTrainingStudents } from './lib/cross-validation';
 import { kMeans, distributeClusters } from './core/k-means';
 import { stableRoommates }  from './core/irving';
 
-const fileStream = createReadStream('./data/students-preferences.csv');
+const fileStream = createReadStream('./data/students-preferences-friends.csv');
 const parser = csv({columns: true, delimiter: ';'});
 
 const students: Student[] = [];
@@ -19,11 +19,21 @@ fileStream.pipe(parser).on('data', (row: any) => {
   const student = new Student(row);
   students.push(student);
 }).on('finish', () => {
-  for (let division of getTestingAndTrainingStudents(students)) {
-    const clusters = kMeans(division.training.map(student => student.toPoint()),
-                            division.training.length / 3);
-    const distributedClusters = distributeClusters(clusters, 3);
-    // stableRoommates(students.filter(st => st.preferences.value.length > 100));
-    console.log(students);
-  }
+  const clusters = kMeans(students.map(st => st.toPoint()),
+                          students.length / 3);
+  const distributedClusters = distributeClusters(clusters, 2);
+  // stableRoommates(students.filter(st => st.preferences.value.length > 100));
+  let matchedCount = 0;
+  distributedClusters.forEach(cluster => {
+    if (cluster.length === 2) {
+      const firstStudent = students[cluster[0]];
+      const secondStudent = students[cluster[1]];
+      if (firstStudent.closeFriend.value === cluster[1] ||
+          secondStudent.closeFriend.value === cluster[0]) {
+        matchedCount += 1;
+      }
+    }
+  });
+
+  console.log(`${(matchedCount / students.length) * 100}% match`);
 });
